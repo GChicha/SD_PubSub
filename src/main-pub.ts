@@ -2,8 +2,8 @@ import { Socket, createConnection } from 'net';
 import * as opts from 'optimist';
 
 let args = opts
-	.usage('Uso: $0 -p PORT [-h HOST] -t TAG -d DATA\nDefault HOST=localhost')
-	.demand(['p', 'd', 't']).argv;
+	.usage('Uso: $0 -p PORT [-h HOST] -n NAME -t TAG -d DATA\nDefault HOST=localhost')
+	.demand(['p', 'd', 't', 'n']).argv;
 
 let host = args.h || "localhost";
 
