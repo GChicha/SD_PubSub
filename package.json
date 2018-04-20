@@ -1,0 +1,18 @@
+{
+  "name": "pubSub",
+  "version": "0.0.1",
+  "description": "Trabalho Sistemas Distribuidos - Publicar Assinar",
+  "main": "index.js",
+  "author": "Guilherme Chichanoski",
+  "license": "GPLv2",
+  "private": false,
+  "dependencies": {
+    "optimist": "^0.6.1",
+    "ts-node": "^6.0.0",
+    "typescript": "^2.8.3"
+  },
+  "devDependencies": {
+    "@types/node": "^9.6.6",
+    "@types/optimist": "^0.0.29"
+  }
+}
