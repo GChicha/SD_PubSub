@@ -29,6 +29,8 @@ const server = createServer((newCliente : Socket) => {
 				if (!cliente.socket.destroyed) cliente.socket.write(buf);
 			}, 200));
 
+            if (serverSock != null) serverSock.write(buf);
+
 			cliente.subs.push(obj.tag);
 		} else if (obj.type == "publish") publish(obj);
 	});
