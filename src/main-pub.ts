@@ -7,10 +7,7 @@ let args = opts
 
 let host = args.h || "localhost";
 
-let socket = createConnection({
-	port: args.p,
-	host: host
-});
+let socket = createConnection({port: args.p, host: host});
 
 socket.on("connect", () => {
 	socket.write(Buffer.from(JSON.stringify({
