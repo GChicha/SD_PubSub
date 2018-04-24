@@ -1,4 +1,5 @@
 import { Socket, createConnection } from 'net';
+import { ReadLine, createInterface } from 'readline';
 import * as opts from 'optimist';
 
 let args = opts
@@ -7,14 +8,18 @@ let args = opts
 
 let host = args.h || "localhost";
 
-let socket = createConnection({port: args.p, host: host});
+let socketRaw : Socket = createConnection({port: args.p, host: host});
+let socket = createInterface({
+    input: socketRaw,
+    output: socketRaw
+});
 
 socket.on("connect", () => {
-	socket.write(Buffer.from(JSON.stringify({
+	socket.write(JSON.stringify({
 		type: "publish",
 		tag: args.t,
 		data: args.d
-	})));
+	}) + '\n');
 
-	socket.end();
+	socketRaw.end();
 });

@@ -1,4 +1,5 @@
 import { Socket, createConnection } from 'net';
+import { ReadLine, createInterface } from 'readline';
 import * as opts from 'optimist';
 
 let args = opts
@@ -7,22 +8,24 @@ let args = opts
 
 let host = args.h || "localhost";
 
-let socket = createConnection({port: args.p, host: host});
+let socketRaw = createConnection({port: args.p, host: host});
+let socket = createInterface({
+    input: socketRaw,
+    output: socketRaw
+});
 
 socket.on("connect", () => {
     if (args.t.forEach == undefined)
-        socket.write(Buffer.from(JSON.stringify({type: "subscribe", tag: args.t})));
+        socket.write(JSON.stringify({type: "subscribe", tag: args.t}) + '\n');
     else args.t.forEach((tag : String) => {
-        setTimeout(() => {
-            socket.write(Buffer.from(JSON.stringify({
-                type: "subscribe",
-                tag: tag
-            })));
-        }, 100);
+        socket.write(JSON.stringify({
+            type: "subscribe",
+            tag: tag
+        }) + '\n');
     });
 });
 
-socket.on("data", buf => {
-	let obj = JSON.parse(buf.toString());
+socket.on("line", buf => {
+	let obj = JSON.parse(buf);
 	if (obj.type == "publish") console.log(JSON.stringify(obj, null, 2), args.n);
 });
