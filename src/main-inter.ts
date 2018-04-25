@@ -12,9 +12,6 @@ class Client {
 	constructor (socket : Socket) {this.socket = socket;}
 }
 
-let serverSock : Socket | null = null;
-let serverSubs : Array<String> = [];
-
 let clientes : Array<Client> = [];
 
 const server = createServer((newCliente : Socket) => {
@@ -25,14 +22,10 @@ const server = createServer((newCliente : Socket) => {
 		let obj = JSON.parse(buf.toString());
 
 		if (obj.type == "subscribe") {
-			clientes.forEach(cliente => setTimeout(() => {
-				if (!cliente.socket.destroyed) cliente.socket.write(buf);
-			}, 200));
-
-            if (serverSock != null) serverSock.write(buf);
+            send_all(obj, newCliente, true);
 
 			cliente.subs.push(obj.tag);
-		} else if (obj.type == "publish") publish(obj);
+		} else if (obj.type == "publish") send_all(obj, newCliente, false);
 	});
 });
 
@@ -41,21 +34,22 @@ server.listen(args.s);
 if (args.p) {
 	const host = args.h || 'localhost';
 
-	serverSock = createConnection({port: args.p, host: host});
+	let serverSock = createConnection({port: args.p, host: host});
+    let serverCliente = new Client(serverSock);
+    clientes.push(serverCliente);
 
 	serverSock.on('data', data => {
 		let obj = JSON.parse(data.toString());
-		if (obj.type == "subscribe" && !serverSubs.includes(obj.tag))
-			serverSubs.push(obj.tag);
+		if (obj.type == "subscribe" && !serverCliente.subs.includes(obj.tag))
+			serverCliente.subs.push(obj.tag);
 	});
 }
 
-function publish(data : any) {
+function send_all(data : any, socket_origin : Socket, to_tags : Boolean) {
 	clientes.forEach(cliente =>  {
-		if (!cliente.socket.destroyed && cliente.subs.includes(data.tag))
+        if (!cliente.socket.destroyed &&
+            (cliente.subs.includes(data.tag) || to_tags) &&
+            socket_origin != cliente.socket)
 			cliente.socket.write(Buffer.from(JSON.stringify(data)));
 	});
-
-    if (serverSock && serverSubs.includes(data.tag))
-        serverSock.write(Buffer.from(JSON.stringify(data)));
 }
