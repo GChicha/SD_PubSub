@@ -11,13 +11,13 @@ let socket = createConnection({port: args.p, host: host});
 
 socket.on("connect", () => {
     if (args.t.forEach == undefined)
-        socket.write(Buffer.from(JSON.stringify({type: "subscribe", tag: args.t})));
+        socket.write(JSON.stringify({type: "subscribe", tag: args.t}));
     else args.t.forEach((tag : String) => {
         setTimeout(() => {
-            socket.write(Buffer.from(JSON.stringify({
+            socket.write(JSON.stringify({
                 type: "subscribe",
                 tag: tag
-            })));
+            }));
         }, 100);
     });
 });

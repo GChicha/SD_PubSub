@@ -50,6 +50,6 @@ function send_all(data : any, socket_origin : Socket, to_tags : Boolean) {
         if (!cliente.socket.destroyed &&
             (cliente.subs.includes(data.tag) || to_tags) &&
             socket_origin != cliente.socket)
-            cliente.socket.write(Buffer.from(JSON.stringify(data)));
+            cliente.socket.write(JSON.stringify(data));
     });
 }
